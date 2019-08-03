@@ -1,0 +1,70 @@
+body {
+        font: 10px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-align:center;
+}
+
+.axis path,
+.axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+}
+
+.x.axis path {
+        display: none;
+}
+
+.line1 {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+}
+
+.line2 {
+        fill: none;
+        stroke: red;
+        stroke-width: 1.5px;
+}
+
+.line3 {
+        fill: none;
+        stroke: green;
+        stroke-width: 1.5px;
+}
+
+.overlay {
+        fill: none;
+        pointer-events: all;
+}
+
+.focus circle {
+        fill: steelblue;
+}
+
+.focus text {
+        font-size: 14px;
+}
+
+.tooltip {
+        fill: white;
+        stroke: #000;
+}
+
+.tooltip-date, .tooltip-price {
+        font-weight: bold;
+}
+
+a.step-link {
+      padding: 5px;
+      background-color: grey;
+      color: white;
+      text-decoration: none;
+}
+
+a.step-link:hover, a.active {
+      font-weight: bold;
+}
+
+a.step-link:hover, a.target {
+      background-color: steelblue;
+}

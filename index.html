@@ -1,1 +1,331 @@
-Hello World
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>How Microsoft Hit $1 Trillion?</title> 
+  <LINK href="styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h1>How Microsoft Hit $1 Trillion?</h1> 
+  <h2>3 CEO make it happen in 44 years</h2> 
+  <div id="vis-nav">
+    <a href="#" id="step-1" class="step-link active target">Bill Gates</a>
+    <a href="#" id="step-2" class="step-link">Steve Ballmer</a>
+    <a href="#" id="step-3" class="step-link">Satya Nadella</a>
+  </div>
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script>
+
+    var steps = {
+      "step-1": function(){ showHideText("Step one for Bill Gates."); },
+      "step-2": function(){ showHideText("Step two for Steve Ballmer."); },
+      "step-3": function(){ showHideText("Step three for Satya Nadella."); }
+    }
+    
+    console.log("steps", steps)
+
+    function switchStep(newStep){
+      d3.selectAll(".step-link").classed("active", false);
+      d3.select("#" + newStep).classed("active", true);
+      
+      var action = steps[newStep]
+      
+      console.log(newStep, steps, action)
+    }
+    
+    function nextStep(){
+      var attrID = d3.select(".active").attr("id").split("-")[0]
+      	  activeIndex = +d3.select(".active").attr("id").split("-")[1],
+          targetIndex = +d3.select(".target").attr("id").split("-")[1],
+          nextIndex = activeIndex + Math.sign(targetIndex - activeIndex);
+      
+      return (nextIndex == activeIndex) ? false : [attrID, nextIndex].join("-");
+    }
+    
+    function switchTarget(newStep){
+      d3.selectAll(".step-link").classed("target", false);
+      d3.select("#" + newStep).classed("target", true);
+    }
+
+    function switchAnnotation(newStep){
+      console.log("switchAnnotation");
+      if(newStep == "step-1") {
+        d3.select("#line2")
+          .style("opacity", 0);
+        d3.select("#line3")
+          .style("opacity", 0);
+        d3.selectAll("#SteveText")
+          .style("opacity", 0);
+        d3.selectAll("#SatyaText")
+          .style("opacity", 0);
+        d3.selectAll("#focus")
+          .style("opacity", 0);
+      }
+      else if(newStep == "step-2") {
+        d3.select("#line2")
+          .style("opacity", 1);
+        d3.select("#line3")
+          .style("opacity", 0);
+        d3.selectAll("#SteveText")
+          .style("opacity", 1);
+        d3.selectAll("#SatyaText")
+          .style("opacity", 0);
+        d3.selectAll("#focus")
+          .style("opacity", 0);
+      }
+      else {
+        d3.select("#line2")
+          .style("opacity", 1);
+        d3.select("#line3")
+          .style("opacity", 1);
+        d3.selectAll("#SteveText")
+          .style("opacity", 1);
+        d3.selectAll("#SatyaText")
+          .style("opacity", 1);
+        d3.selectAll("#focus")
+          .style("opacity", 1);
+      }
+    }
+
+    d3.selectAll("a.step-link").on("click", function(d){
+      var clickedStep = d3.select(this).attr("id");
+
+      //console.log(d3.select(this).attr("class"));
+      console.log(clickedStep);
+      if(d3.select(this).attr("class") == "step-link") {	    
+        switchTarget(clickedStep);
+     	switchStep(nextStep());
+        switchAnnotation(clickedStep);
+      }
+      
+      
+      return false;
+    });
+    
+    var showHideText = function(myText){
+      d3.select("#myText")
+        .style("opacity", 0.0)
+      	.text(myText)
+      
+    }
+
+    var margin = { top: 60, right: 200, bottom: 60, left: 50 },
+        width = 1500 - margin.left - margin.right,
+        height = 700 - margin.top - margin.bottom,
+        tooltip = { width: 100, height: 100, x: 10, y: -30 };
+
+    var parseDate = d3.timeParse("%Y-%m-%d"),
+        bisectDate = d3.bisector(function(d) { return d.Date; }).left,
+        formatValue = d3.format(","),
+        dateFormatter = d3.timeParse("%Y"),
+	BillDate = new Date(2000,1,13),
+        SteveDate = new Date(2014,2,4), 
+        datetooltip = d3.timeFormat("%Y-%m-%d");
+
+    var x = d3.scaleTime().range([0, width]);
+
+    var y = d3.scaleLinear().range([height, 0]);
+
+    var line3 = d3.line()
+	.x(function(d) { return x(d.Date); })
+	.y(function(d) { return y(d.Close); });
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+      svg.append("text")
+      .text("Bill Gates founded Microsoft in 1975")
+      .attr("y", 530)
+      .attr("x", 10)
+      .attr("id", "BillText")
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+      
+       svg.append("text")
+      .text("Market Cap: 0.0067 Trillion")
+      .attr("y", 550)
+      .attr("x", 10)
+      .attr("id", "BillText")
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+    
+      svg.append("text")
+      .text("Steve Ballmer become CEO in 2000")
+      .attr("y", 310)
+      .attr("x", 400)
+      .attr("id", "SteveText")
+      .style("opacity", 0)
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+
+      svg.append("text")
+      .text("Market Cap: 0.4 Trillion")
+      .attr("y", 330)
+      .attr("x", 400)
+      .attr("id", "SteveText")
+      .style("opacity", 0)
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+
+      svg.append("text")
+      .text("Satya Nadella become CEO in 2014")
+      .attr("y", 310)
+      .attr("x", 900)
+      .attr("id", "SatyaText")
+      .style("opacity", 0)
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+
+      svg.append("text")
+      .text("Market Cap: 0.28 Trillion")
+      .attr("y", 330)
+      .attr("x", 900)
+      .attr("id", "SatyaText")
+      .style("opacity", 0)
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+
+      svg.append("text")
+      .text("Microsoft Hit $1 Trillion in 2019")
+      .attr("y", 50)
+      .attr("x", 1000)
+      .attr("id", "SatyaText")
+      .style("opacity", 0)
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+
+      svg.append("text")
+      .text("Market Cap: 1 Trillion")
+      .attr("y", 70)
+      .attr("x", 1000)
+      .attr("id", "SatyaText")
+      .style("opacity", 0)
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+
+    d3.csv("MSFT.csv", function(error, data) {
+        if (error) throw error;
+
+        data.forEach(function(d) {
+            d.Date = parseDate(d.Date);
+            d.Close = +d.Close;
+            if(d.Date < BillDate) { 
+	        d.CEO = "Bill Gates";
+		d.CEO_id = 1;
+	    }
+            else if(d.Date < SteveDate) { 
+	        d.CEO = "Steve Ballmer";
+		d.CEO_id = 2;
+	    }
+            else { 
+	        d.CEO = "Satya Nadella";
+		d.CEO_id = 3;
+	    }
+        });
+
+        data.sort(function(a, b) {
+            return a.Date - b.Date;
+        });
+
+	// Scale the range of the data
+        x.domain(d3.extent(data, function(d) { return d.Date; }));
+        y.domain([0, d3.max(data, function(d) { return d.Close; })]);
+	
+	// Add the X Axis
+        svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+        // Add the Y Axis
+        svg.append("g")
+        .call(d3.axisLeft(y));
+
+        svg.append("path")
+            .datum(data.filter(function(d) { return d.CEO_id == 3 }))
+	    .attr("class", "line3")
+	    .attr("id", "line3")
+	    .style("opacity", 0)
+            .attr("d", line3);
+
+	svg.append("path")
+            .datum(data.filter(function(d) { return d.CEO_id == 2 }))
+	    .attr("class", "line2")
+	    .attr("id", "line2")
+	    .style("opacity", 0)
+            .attr("d", line3);
+
+	svg.append("path")
+            .datum(data.filter(function(d) { return d.CEO_id == 1 }))
+	    .attr("class", "line1")
+	    .attr("id", "line1")
+            .attr("d", line3);
+
+        var focus = svg.append("g")
+            .attr("class", "focus")
+            .attr("id", "focus")
+	    .style("opacity", 0)
+            .style("display", "none");
+
+        focus.append("circle")
+            .attr("r", 5);
+
+        focus.append("rect")
+            .attr("class", "tooltip")
+            .attr("width", 150)
+            .attr("height", 75)
+            .attr("x", 10)
+            .attr("y", -22)
+            .attr("rx", 4)
+            .attr("ry", 4);
+
+        focus.append("text")
+            .attr("class", "tooltip-date")
+            .attr("x", 18)
+            .attr("y", -2);
+
+        focus.append("text")
+            .attr("x", 18)
+            .attr("y", 18)
+            .text("Price:");
+
+        focus.append("text")
+            .attr("class", "tooltip-price")
+            .attr("x", 60)
+            .attr("y", 18);
+
+        focus.append("text")
+            .attr("x", 18)
+            .attr("y", 38)
+            .text("CEO:");
+        
+	focus.append("text")
+            .attr("class", "tooltip-ceo")
+            .attr("x", 60)
+            .attr("y", 38);
+
+        svg.append("rect")
+            .attr("class", "overlay")
+            .attr("width", width)
+            .attr("height", height)
+            .on("mouseover", function() { focus.style("display", null); })
+            .on("mouseout", function() { focus.style("display", "none"); })
+            .on("mousemove", mousemove);
+
+        function mousemove() {
+            var x0 = x.invert(d3.mouse(this)[0]),
+                i = bisectDate(data, x0, 1),
+                d0 = data[i - 1],
+                d1 = data[i],
+                d = x0 - d0.Date > d1.Date - x0 ? d1 : d0;
+            focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
+            focus.select(".tooltip-date").text(datetooltip(d.Date));
+            focus.select(".tooltip-price").text(formatValue(Number(d.Close).toFixed(2)));
+		focus.select(".tooltip-ceo").text(d.CEO);
+        }
+    
+	}); //data
+
+</script>
+</body>
