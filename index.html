@@ -7,18 +7,20 @@
 <body>
   <h1>How Microsoft Hit $1 Trillion?</h1> 
   <h2>3 CEO make it happen in 44 years</h2> 
+  <h3> Click on the following name of CEO to see the different stage of Microsoft</h3> 
   <div id="vis-nav">
     <a href="#" id="step-1" class="step-link active target">Bill Gates</a>
     <a href="#" id="step-2" class="step-link">Steve Ballmer</a>
     <a href="#" id="step-3" class="step-link">Satya Nadella</a>
   </div>
+  <h3>More detail when mouse over the line</h3> 
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script>
 
     var steps = {
-      "step-1": function(){ showHideText("Step one for Bill Gates."); },
-      "step-2": function(){ showHideText("Step two for Steve Ballmer."); },
-      "step-3": function(){ showHideText("Step three for Satya Nadella."); }
+      "step-1": function(){ showHideText("2000-01-13"); },
+      "step-2": function(){ showHideText("2014-02-04"); },
+      "step-3": function(){ showHideText("2019-12-30"); }
     }
     
     console.log("steps", steps)
@@ -27,7 +29,7 @@
       d3.selectAll(".step-link").classed("active", false);
       d3.select("#" + newStep).classed("active", true);
       
-      var action = steps[newStep]
+      var action = steps[newStep];
       
       console.log(newStep, steps, action)
     }
@@ -57,8 +59,7 @@
           .style("opacity", 0);
         d3.selectAll("#SatyaText")
           .style("opacity", 0);
-        d3.selectAll("#focus")
-          .style("opacity", 0);
+	showHideText("2000-01-13");
       }
       else if(newStep == "step-2") {
         d3.select("#line2")
@@ -69,8 +70,7 @@
           .style("opacity", 1);
         d3.selectAll("#SatyaText")
           .style("opacity", 0);
-        d3.selectAll("#focus")
-          .style("opacity", 0);
+	showHideText("2014-02-04");
       }
       else {
         d3.select("#line2")
@@ -81,21 +81,20 @@
           .style("opacity", 1);
         d3.selectAll("#SatyaText")
           .style("opacity", 1);
-        d3.selectAll("#focus")
-          .style("opacity", 1);
+	showHideText("2019-12-30");
       }
     }
 
     d3.selectAll("a.step-link").on("click", function(d){
       var clickedStep = d3.select(this).attr("id");
 
-      //console.log(d3.select(this).attr("class"));
+      console.log(d3.select(this).attr("class"));
       console.log(clickedStep);
-      if(d3.select(this).attr("class") == "step-link") {	    
+      if(d3.select(this).attr("class") == "step-link" || d3.select(this).attr("class") == "step-link target") {	    
         switchTarget(clickedStep);
      	switchStep(nextStep());
-        switchAnnotation(clickedStep);
       }
+      switchAnnotation(clickedStep);
       
       
       return false;
@@ -103,8 +102,7 @@
     
     var showHideText = function(myText){
       d3.select("#myText")
-        .style("opacity", 0.0)
-      	.text(myText)
+      	.text(myText);
       
     }
 
@@ -134,6 +132,14 @@
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+      svg.append("text")
+      .text("2000-01-13")
+      .attr("y", 200)
+      .attr("x", 120)
+      .style("opacity", 0)
+      .attr("id", "myText");
       
       svg.append("text")
       .text("Bill Gates founded Microsoft in 1975")
@@ -265,7 +271,6 @@
         var focus = svg.append("g")
             .attr("class", "focus")
             .attr("id", "focus")
-	    .style("opacity", 0)
             .style("display", "none");
 
         focus.append("circle")
@@ -313,7 +318,7 @@
             .on("mouseout", function() { focus.style("display", "none"); })
             .on("mousemove", mousemove);
 
-        function mousemove() {
+        function mousemove() { 
             var x0 = x.invert(d3.mouse(this)[0]),
                 i = bisectDate(data, x0, 1),
                 d0 = data[i - 1],
@@ -322,7 +327,15 @@
             focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
             focus.select(".tooltip-date").text(datetooltip(d.Date));
             focus.select(".tooltip-price").text(formatValue(Number(d.Close).toFixed(2)));
-		focus.select(".tooltip-ceo").text(d.CEO);
+	    focus.select(".tooltip-ceo").text(d.CEO);
+	    //console.log(d);
+	    if( d.Date < parseDate(d3.select("#myText").text())) {
+	      focus.style("opacity", 1)
+	    }
+	    else {
+	      focus.style("opacity", 0)
+	    }
+
         }
     
 	}); //data
