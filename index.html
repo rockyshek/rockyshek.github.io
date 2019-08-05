@@ -17,13 +17,14 @@
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script>
 
+    // Three Scenes	
     var scenes = {
       "scene-1": function(){ updateHideDate("2000-01-13"); },
       "scene-2": function(){ updateHideDate("2014-02-04"); },
       "scene-3": function(){ updateHideDate("2019-12-30"); }
     }
     
-    console.log("scenes", scenes)
+    //console.log("scenes", scenes)
 
     function switchScene(newScene){
       d3.selectAll(".scene-link").classed("active", false);
@@ -31,7 +32,7 @@
       
       var action = scenes[newScene];
       
-      console.log(newScene, scenes, action)
+      //console.log(newScene, scenes, action)
     }
     
     function nextScene(){
@@ -48,8 +49,10 @@
       d3.select("#" + newScene).classed("target", true);
     }
 
+    // Scene Trigger
+
     function switchAnnotation(newScene){
-      console.log("switchAnnotation");
+      //console.log("switchAnnotation");
       if(newScene == "scene-1") {
         d3.select("#line2")
           .style("opacity", 0);
@@ -88,8 +91,8 @@
     d3.selectAll("a.scene-link").on("click", function(d){
       var clickedScene = d3.select(this).attr("id");
 
-      console.log(d3.select(this).attr("class"));
-      console.log(clickedScene);
+      //console.log(d3.select(this).attr("class"));
+      //console.log(clickedScene);
       if(d3.select(this).attr("class") == "scene-link" || d3.select(this).attr("class") == "scene-link target") {	    
         switchTarget(clickedScene);
      	switchScene(nextScene());
@@ -100,6 +103,7 @@
       return false;
     });
     
+    // HideDate control which tooltip show up
     var updateHideDate = function(hideDate){
       d3.select("#hideDate")
       	.text(hideDate);
@@ -156,6 +160,8 @@
       .style("opacity", 0)
       .attr("id", "hideDate");
       
+
+      // Annotation for Bill Gates 
       svg.append("text")
       .text("Bill Gates founded Microsoft in 1975")
       .attr("y", 500)
@@ -180,6 +186,7 @@
       .style("font-size", 12)
       .style("font-family", "monospace");
     
+      // Annotation for Steve Ballmer 
       svg.append("text")
       .text("Steve Ballmer become CEO in 2000")
       .attr("y", 280)
@@ -198,6 +205,7 @@
       .style("font-size", 12)
       .style("font-family", "monospace");
 
+      // Annotation for Satya Nadella 
       svg.append("text")
       .text("Satya Nadella become CEO in 2014")
       .attr("y", 280)
@@ -234,6 +242,7 @@
       .style("font-size", 12)
       .style("font-family", "monospace");
 
+      // Load data 
     d3.csv("MSFT.csv", function(error, data) {
         if (error) throw error;
 
@@ -273,6 +282,7 @@
         svg.append("g")
         .call(d3.axisLeft(y));
 
+        // Line for Satya 
         svg.append("path")
             .datum(data.filter(function(d) { return d.CEO_id == 3 }))
 	    .attr("class", "line3")
@@ -280,6 +290,7 @@
 	    .style("opacity", 0)
             .attr("d", line);
 
+        // Line for Steve 
 	svg.append("path")
             .datum(data.filter(function(d) { return d.CEO_id == 2 }))
 	    .attr("class", "line2")
@@ -287,12 +298,14 @@
 	    .style("opacity", 0)
             .attr("d", line);
 
+        // Line for Bill 
 	svg.append("path")
             .datum(data.filter(function(d) { return d.CEO_id == 1 }))
 	    .attr("class", "line1")
 	    .attr("id", "line1")
             .attr("d", line);
         
+        // Tooltip 
         var focus = svg.append("g")
             .attr("class", "focus")
             .attr("id", "focus")
@@ -353,6 +366,7 @@
             .on("mouseout", function() { focus.style("display", "none"); })
             .on("mousemove", mousemove);
 
+        // Tooltip Trigger
         function mousemove() { 
             var x0 = x.invert(d3.mouse(this)[0]),
                 i = bisectDate(data, x0, 1),
