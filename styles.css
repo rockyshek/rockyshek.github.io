@@ -50,21 +50,21 @@ body {
         stroke: #000;
 }
 
-.tooltip-date, .tooltip-price {
+.tooltip-date, .tooltip-price, .tooltip-ceo, .tooltip-cap {
         font-weight: bold;
 }
 
-a.step-link {
+a.scene-link {
       padding: 5px;
       background-color: grey;
       color: white;
       text-decoration: none;
 }
 
-a.step-link:hover, a.active {
+a.scene-link:hover, a.active {
       font-weight: bold;
 }
 
-a.step-link:hover, a.target {
+a.scene-link:hover, a.target {
       background-color: steelblue;
 }

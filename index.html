@@ -8,33 +8,33 @@
   <h1>How Microsoft Hit $1 Trillion?</h1> 
   <h2>3 CEO make it happen in 44 years</h2> 
   <h3> Click on the following name of CEO to see the different stage of Microsoft</h3> 
-  <div id="vis-nav">
-    <a href="#" id="step-1" class="step-link active target">Bill Gates</a>
-    <a href="#" id="step-2" class="step-link">Steve Ballmer</a>
-    <a href="#" id="step-3" class="step-link">Satya Nadella</a>
+  <div>
+    <a href="#" id="scene-1" class="scene-link active target">Bill Gates</a>
+    <a href="#" id="scene-2" class="scene-link">Steve Ballmer</a>
+    <a href="#" id="scene-3" class="scene-link">Satya Nadella</a>
   </div>
   <h3>More detail when mouse over the line</h3> 
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script>
 
-    var steps = {
-      "step-1": function(){ showHideText("2000-01-13"); },
-      "step-2": function(){ showHideText("2014-02-04"); },
-      "step-3": function(){ showHideText("2019-12-30"); }
+    var scenes = {
+      "scene-1": function(){ updateHideDate("2000-01-13"); },
+      "scene-2": function(){ updateHideDate("2014-02-04"); },
+      "scene-3": function(){ updateHideDate("2019-12-30"); }
     }
     
-    console.log("steps", steps)
+    console.log("scenes", scenes)
 
-    function switchStep(newStep){
-      d3.selectAll(".step-link").classed("active", false);
-      d3.select("#" + newStep).classed("active", true);
+    function switchScene(newScene){
+      d3.selectAll(".scene-link").classed("active", false);
+      d3.select("#" + newScene).classed("active", true);
       
-      var action = steps[newStep];
+      var action = scenes[newScene];
       
-      console.log(newStep, steps, action)
+      console.log(newScene, scenes, action)
     }
     
-    function nextStep(){
+    function nextScene(){
       var attrID = d3.select(".active").attr("id").split("-")[0]
       	  activeIndex = +d3.select(".active").attr("id").split("-")[1],
           targetIndex = +d3.select(".target").attr("id").split("-")[1],
@@ -43,14 +43,14 @@
       return (nextIndex == activeIndex) ? false : [attrID, nextIndex].join("-");
     }
     
-    function switchTarget(newStep){
-      d3.selectAll(".step-link").classed("target", false);
-      d3.select("#" + newStep).classed("target", true);
+    function switchTarget(newScene){
+      d3.selectAll(".scene-link").classed("target", false);
+      d3.select("#" + newScene).classed("target", true);
     }
 
-    function switchAnnotation(newStep){
+    function switchAnnotation(newScene){
       console.log("switchAnnotation");
-      if(newStep == "step-1") {
+      if(newScene == "scene-1") {
         d3.select("#line2")
           .style("opacity", 0);
         d3.select("#line3")
@@ -59,9 +59,9 @@
           .style("opacity", 0);
         d3.selectAll("#SatyaText")
           .style("opacity", 0);
-	showHideText("2000-01-13");
+	updateHideDate("2000-01-13");
       }
-      else if(newStep == "step-2") {
+      else if(newScene == "scene-2") {
         d3.select("#line2")
           .style("opacity", 1);
         d3.select("#line3")
@@ -70,7 +70,7 @@
           .style("opacity", 1);
         d3.selectAll("#SatyaText")
           .style("opacity", 0);
-	showHideText("2014-02-04");
+	updateHideDate("2014-02-04");
       }
       else {
         d3.select("#line2")
@@ -81,32 +81,32 @@
           .style("opacity", 1);
         d3.selectAll("#SatyaText")
           .style("opacity", 1);
-	showHideText("2019-12-30");
+	updateHideDate("2019-12-30");
       }
     }
 
-    d3.selectAll("a.step-link").on("click", function(d){
-      var clickedStep = d3.select(this).attr("id");
+    d3.selectAll("a.scene-link").on("click", function(d){
+      var clickedScene = d3.select(this).attr("id");
 
       console.log(d3.select(this).attr("class"));
-      console.log(clickedStep);
-      if(d3.select(this).attr("class") == "step-link" || d3.select(this).attr("class") == "step-link target") {	    
-        switchTarget(clickedStep);
-     	switchStep(nextStep());
+      console.log(clickedScene);
+      if(d3.select(this).attr("class") == "scene-link" || d3.select(this).attr("class") == "scene-link target") {	    
+        switchTarget(clickedScene);
+     	switchScene(nextScene());
       }
-      switchAnnotation(clickedStep);
+      switchAnnotation(clickedScene);
       
       
       return false;
     });
     
-    var showHideText = function(myText){
-      d3.select("#myText")
-      	.text(myText);
+    var updateHideDate = function(hideDate){
+      d3.select("#hideDate")
+      	.text(hideDate);
       
     }
 
-    var margin = { top: 60, right: 200, bottom: 60, left: 50 },
+    var margin = { top: 60, right: 250, bottom: 80, left: 50 },
         width = 1500 - margin.left - margin.right,
         height = 700 - margin.top - margin.bottom,
         tooltip = { width: 100, height: 100, x: 10, y: -30 };
@@ -115,15 +115,13 @@
         bisectDate = d3.bisector(function(d) { return d.Date; }).left,
         formatValue = d3.format(","),
         dateFormatter = d3.timeParse("%Y"),
-	BillDate = new Date(2000,1,13),
-        SteveDate = new Date(2014,2,4), 
         datetooltip = d3.timeFormat("%Y-%m-%d");
 
     var x = d3.scaleTime().range([0, width]);
 
     var y = d3.scaleLinear().range([height, 0]);
 
-    var line3 = d3.line()
+    var line = d3.line()
 	.x(function(d) { return x(d.Date); })
 	.y(function(d) { return y(d.Close); });
 
@@ -133,25 +131,50 @@
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+      // text label for the x axis
+      svg.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top - 15) + ")")
+      .style("text-anchor", "middle")
+      .text("Year");
+
+      // text label for the y axis
+      svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Price");
+
 
       svg.append("text")
       .text("2000-01-13")
       .attr("y", 200)
       .attr("x", 120)
       .style("opacity", 0)
-      .attr("id", "myText");
+      .attr("id", "hideDate");
       
       svg.append("text")
       .text("Bill Gates founded Microsoft in 1975")
-      .attr("y", 530)
+      .attr("y", 500)
+      .attr("x", 10)
+      .attr("id", "BillText")
+      .style("font-size", 12)
+      .style("font-family", "monospace");
+      
+      svg.append("text")
+      .text("MSFT trade in NASDAQ since 1986")
+      .attr("y", 520)
       .attr("x", 10)
       .attr("id", "BillText")
       .style("font-size", 12)
       .style("font-family", "monospace");
       
        svg.append("text")
-      .text("Market Cap: 0.0067 Trillion")
-      .attr("y", 550)
+      .text("Market Cap: 0.0007 Trillion")
+      .attr("y", 540)
       .attr("x", 10)
       .attr("id", "BillText")
       .style("font-size", 12)
@@ -159,7 +182,7 @@
     
       svg.append("text")
       .text("Steve Ballmer become CEO in 2000")
-      .attr("y", 310)
+      .attr("y", 280)
       .attr("x", 400)
       .attr("id", "SteveText")
       .style("opacity", 0)
@@ -168,7 +191,7 @@
 
       svg.append("text")
       .text("Market Cap: 0.4 Trillion")
-      .attr("y", 330)
+      .attr("y", 300)
       .attr("x", 400)
       .attr("id", "SteveText")
       .style("opacity", 0)
@@ -177,8 +200,8 @@
 
       svg.append("text")
       .text("Satya Nadella become CEO in 2014")
-      .attr("y", 310)
-      .attr("x", 900)
+      .attr("y", 280)
+      .attr("x", 860)
       .attr("id", "SatyaText")
       .style("opacity", 0)
       .style("font-size", 12)
@@ -186,8 +209,8 @@
 
       svg.append("text")
       .text("Market Cap: 0.28 Trillion")
-      .attr("y", 330)
-      .attr("x", 900)
+      .attr("y", 300)
+      .attr("x", 860)
       .attr("id", "SatyaText")
       .style("opacity", 0)
       .style("font-size", 12)
@@ -196,7 +219,7 @@
       svg.append("text")
       .text("Microsoft Hit $1 Trillion in 2019")
       .attr("y", 50)
-      .attr("x", 1000)
+      .attr("x", 940)
       .attr("id", "SatyaText")
       .style("opacity", 0)
       .style("font-size", 12)
@@ -205,7 +228,7 @@
       svg.append("text")
       .text("Market Cap: 1 Trillion")
       .attr("y", 70)
-      .attr("x", 1000)
+      .attr("x", 940)
       .attr("id", "SatyaText")
       .style("opacity", 0)
       .style("font-size", 12)
@@ -217,11 +240,13 @@
         data.forEach(function(d) {
             d.Date = parseDate(d.Date);
             d.Close = +d.Close;
-            if(d.Date < BillDate) { 
+            //if(d.Date < BillDate) { 
+            if(d.Date < parseDate("2000-01-13")) { 
 	        d.CEO = "Bill Gates";
 		d.CEO_id = 1;
 	    }
-            else if(d.Date < SteveDate) { 
+            //else if(d.Date < SteveDate) { 
+            else if(d.Date < parseDate("2014-02-04")) { 
 	        d.CEO = "Steve Ballmer";
 		d.CEO_id = 2;
 	    }
@@ -242,7 +267,7 @@
 	// Add the X Axis
         svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y")).ticks(12));
 
         // Add the Y Axis
         svg.append("g")
@@ -253,21 +278,21 @@
 	    .attr("class", "line3")
 	    .attr("id", "line3")
 	    .style("opacity", 0)
-            .attr("d", line3);
+            .attr("d", line);
 
 	svg.append("path")
             .datum(data.filter(function(d) { return d.CEO_id == 2 }))
 	    .attr("class", "line2")
 	    .attr("id", "line2")
 	    .style("opacity", 0)
-            .attr("d", line3);
+            .attr("d", line);
 
 	svg.append("path")
             .datum(data.filter(function(d) { return d.CEO_id == 1 }))
 	    .attr("class", "line1")
 	    .attr("id", "line1")
-            .attr("d", line3);
-
+            .attr("d", line);
+        
         var focus = svg.append("g")
             .attr("class", "focus")
             .attr("id", "focus")
@@ -278,8 +303,8 @@
 
         focus.append("rect")
             .attr("class", "tooltip")
-            .attr("width", 150)
-            .attr("height", 75)
+            .attr("width", 200)
+            .attr("height", 95)
             .attr("x", 10)
             .attr("y", -22)
             .attr("rx", 4)
@@ -310,6 +335,16 @@
             .attr("x", 60)
             .attr("y", 38);
 
+        focus.append("text")
+            .attr("x", 18)
+            .attr("y", 58)
+            .text("Market Cap:");
+        
+	focus.append("text")
+            .attr("class", "tooltip-cap")
+            .attr("x", 100)
+            .attr("y", 58);
+
         svg.append("rect")
             .attr("class", "overlay")
             .attr("width", width)
@@ -326,10 +361,11 @@
                 d = x0 - d0.Date > d1.Date - x0 ? d1 : d0;
             focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
             focus.select(".tooltip-date").text(datetooltip(d.Date));
-            focus.select(".tooltip-price").text(formatValue(Number(d.Close).toFixed(2)));
+            focus.select(".tooltip-price").text("$ " + formatValue(Number(d.Close).toFixed(4)));
 	    focus.select(".tooltip-ceo").text(d.CEO);
+	    focus.select(".tooltip-cap").text("$ " + Number(d.Close * 7.662818 / 1000).toFixed(4) + " Trillion");
 	    //console.log(d);
-	    if( d.Date < parseDate(d3.select("#myText").text())) {
+	    if( d.Date < parseDate(d3.select("#hideDate").text())) {
 	      focus.style("opacity", 1)
 	    }
 	    else {
